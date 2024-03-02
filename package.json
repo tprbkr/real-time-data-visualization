@@ -1,0 +1,21 @@
+{
+  "name": "real-time-data-visualization-nodejs-app",
+  "version": "1.0.0",
+  "description": "real time data visualization application with nodejs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "realtime",
+    "data",
+    "socketio"
+  ],
+  "author": "Prabhakar Tirumala",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.3",
+    "socket.io": "^4.7.4"
+  }
+}

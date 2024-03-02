@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collatz Conjecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+</head>
+<body>
+    <h1>Collatz Conjecture</h1>
+    <label for="inputNumber">Enter a positive integer:</label>
+    <input type="number" id="inputNumber" min="1" value="1">
+    <button id="plotButton">Plot Sequence</button>
+    <canvas id="sequenceChart"></canvas>
+
+    <script>
+        const inputNumber = document.getElementById('inputNumber');
+        const plotButton = document.getElementById('plotButton');
+        const sequenceChart = new Chart(document.getElementById('sequenceChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Collatz Sequence',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)', // Turquoise color
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Step'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const dataPointIndex = context.dataIndex;
+                                const equation = generateEquation(context.chart.data.labels[dataPointIndex], context.parsed.y);
+                                return equation;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const socket = io();
+
+        plotButton.addEventListener('click', () => {
+            const inputValue = parseInt(inputNumber.value);
+            if (inputValue > 0) {
+                socket.emit('generateSequence', inputValue);
+            } else {
+                alert('Please enter a positive integer.');
+            }
+        });
+
+        socket.on('sequenceData', (sequence) => {
+            plotSequence(sequence);
+        });
+
+        function plotSequence(sequence) {
+            const steps = sequence.length;
+            sequenceChart.data.labels = Array.from({ length: steps }, (_, i) => i + 1);
+            sequenceChart.data.datasets[0].data = sequence;
+            sequenceChart.update();
+        }
+
+        function generateEquation(x, y) {
+            return `x: ${x}, y: ${y}`;
+        }
+    </script>
+</body>
+</html>

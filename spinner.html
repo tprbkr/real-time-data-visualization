@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinner</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.1.1/dist/chartjs-adapter-moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-3d@1.1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+</head>
+<body>
+    <h1>Spinner Game</h1>
+    <button id="spinButton">Spin</button>
+    <canvas id="resultChart"></canvas>
+    <script>
+        const spinButton = document.getElementById('spinButton');
+        const resultChart = new Chart(document.getElementById('resultChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Result',
+                    data: [],
+                    backgroundColor: 'rgb(75, 192, 192)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    'chartjs-3d': {
+                        enabled: true,
+                        alpha: 45,
+                        beta: 0
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+
+        const socket = io();
+
+        socket.on('spinResult', (result) => {
+            addResult(result);
+        });
+
+        spinButton.addEventListener('click', () => {
+            socket.emit('spin');
+        });
+
+        function addResult(result) {
+            const attempts = resultChart.data.labels.length + 1;
+            resultChart.data.labels.push(`Attempt ${attempts}`);
+            resultChart.data.datasets[0].data.push(result);
+            resultChart.update();
+        }
+    </script>
+</body>
+</html>
