@@ -1,0 +1,11 @@
+
+# Ignore compiled files
+*.class
+*.jar
+
+# Ignore log files
+*.log
+
+# Ignore directories
+target/
+node_modules/
